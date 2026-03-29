@@ -8,11 +8,12 @@ No local setup needed. Everything is pre-configured.
 
 1. Click the green **"Code"** button on this repo, then **"Codespaces"** > **"Create codespace on main"**
 2. Wait for the codespace to build (~30 seconds). Dependencies install automatically.
-3. Run the scraper:
+3. Upload your CSV: drag your file into the file explorer panel on the left (or right-click > **Upload**)
+4. Run the scraper:
    ```bash
-   python scrape_icodrops.py input_projects.csv --output enriched_projects.csv
+   python scrape_icodrops.py your_file.csv --output enriched_projects.csv
    ```
-4. Download the output: right-click `enriched_projects.csv` in the file explorer > **Download**
+5. Download the output: right-click `enriched_projects.csv` in the file explorer > **Download**
 
 That's it. Skip to [Input file format](#input-file-format) for details on preparing your CSV.
 
