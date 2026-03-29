@@ -1,0 +1,6 @@
+_scrape_cache.json
+enriched_projects.csv
+sample_page.html
+__pycache__/
+*.pyc
+.DS_Store
