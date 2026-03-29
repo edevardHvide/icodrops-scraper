@@ -2,7 +2,25 @@
 
 A CLI tool that scrapes project pages from [icodrops.com](https://icodrops.com) and enriches your CSV dataset with additional fields like website URLs, smart contract addresses, fundraising data, and more.
 
-## Prerequisites
+## Quickstart with GitHub Codespaces (recommended)
+
+No local setup needed. Everything is pre-configured.
+
+1. Click the green **"Code"** button on this repo, then **"Codespaces"** > **"Create codespace on main"**
+2. Wait for the codespace to build (~30 seconds). Dependencies install automatically.
+3. Run the scraper:
+   ```bash
+   python scrape_icodrops.py input_projects.csv --output enriched_projects.csv
+   ```
+4. Download the output: right-click `enriched_projects.csv` in the file explorer > **Download**
+
+That's it. Skip to [Input file format](#input-file-format) for details on preparing your CSV.
+
+---
+
+## Local setup (alternative)
+
+If you prefer to run locally instead of Codespaces:
 
 ### 1. Python 3.9+
 
@@ -28,7 +46,7 @@ If not installed:
 
 - **Windows**:
   Download the installer from https://www.python.org/downloads/windows/
-  During installation, check "Add Python to PATH".
+  During installation, check **"Add Python to PATH"**.
 
 - **Linux (Ubuntu/Debian)**:
   ```bash
@@ -36,30 +54,21 @@ If not installed:
   sudo apt install python3 python3-pip
   ```
 
-### 2. pip (Python package manager)
-
-pip comes bundled with Python 3.9+. Verify it works:
+### 2. Clone the repo and install dependencies
 
 ```bash
-pip3 --version
+git clone https://github.com/edevardHvide/icodrops-scraper.git
+cd icodrops-scraper
+pip3 install -r requirements.txt
 ```
 
-If missing:
+### 3. Run the scraper
 
 ```bash
-python3 -m ensurepip --upgrade
+python3 scrape_icodrops.py input_projects.csv --output enriched_projects.csv
 ```
 
-### 3. Install Python dependencies
-
-```bash
-pip3 install requests beautifulsoup4 lxml
-```
-
-What each package does:
-- **requests** — makes HTTP requests to fetch web pages
-- **beautifulsoup4** — parses HTML and extracts data
-- **lxml** — fast HTML parser used by BeautifulSoup
+---
 
 ## Input file format
 
@@ -153,18 +162,6 @@ rm _scrape_cache.json
 
 ## Example
 
-```bash
-# 1. Install dependencies
-pip3 install requests beautifulsoup4 lxml
-
-# 2. Run the scraper
-python3 scrape_icodrops.py input_projects.csv --output enriched_projects.csv
-
-# 3. Check output
-head enriched_projects.csv
-```
-
-Sample output:
 ```
 Loaded 9 projects from input_projects.csv
 Cache has 0 previously scraped URLs (0 rows already cached)
@@ -191,10 +188,7 @@ Done in 4.6s. Wrote 9 rows to enriched_projects.csv
 ## Troubleshooting
 
 **`ModuleNotFoundError: No module named 'bs4'`**
-Run `pip3 install beautifulsoup4`
-
-**`ModuleNotFoundError: No module named 'lxml'`**
-Run `pip3 install lxml`
+Run `pip install -r requirements.txt`
 
 **Scraper returns MISSING for fields that exist on the page**
 The site may have updated its HTML structure. Open an issue with the project URL.
