@@ -47,6 +47,17 @@ SCRAPED_FIELDS = [
     "ecosystems_list",
 ]
 
+# Values that mean "no data" on the site
+DASH_VALUES = {"—", "–", "-", "$—", "$–", "$-"}
+
+# Columns to rename from input CSV to match spec
+COLUMN_RENAMES = {
+    "source_url": "icodrops_url",
+    "Source URL": "icodrops_url",
+    "categories": "project_category",
+    "Categories": "project_category",
+}
+
 
 def load_cache(path: Path) -> dict:
     if path.exists():
@@ -115,7 +126,7 @@ def extract_contract_addresses(soup: BeautifulSoup) -> dict:
 
 
 def extract_activities(soup: BeautifulSoup) -> dict:
-    """Extract activity count and TGE distribution date from Past Activities."""
+    """Extract activity count, TGE distribution date, and investor count from Past Activities."""
     result = {"activity_count": "", "tge_distribution_date": ""}
 
     # Count activities: each round/activity has a Proj-Rounds-Header
@@ -127,10 +138,8 @@ def extract_activities(soup: BeautifulSoup) -> dict:
     for header in headers:
         title_el = header.select_one(".Proj-Rounds-Header__title")
         if title_el and "tge" in title_el.get_text(strip=True).lower():
-            # Look for date in the header items
             for item in header.select(".Proj-Rounds-Header__item"):
                 text = item.get_text(strip=True)
-                # Match date patterns like "Feb 1, 2018" or "Launched Feb 1, 2018"
                 date_match = re.search(
                     r"((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4})",
                     text
@@ -258,7 +267,8 @@ def main():
         print("Error: no 'source_url' column found in input CSV", file=sys.stderr)
         sys.exit(1)
 
-    output_fieldnames = input_fieldnames + SCRAPED_FIELDS
+    # Rename input columns to match spec
+    output_fieldnames = [COLUMN_RENAMES.get(col, col) for col in input_fieldnames] + SCRAPED_FIELDS
     total = len(rows)
 
     # Collect unique URLs that need scraping
@@ -319,9 +329,11 @@ def main():
     for row in rows:
         url = row.get(url_col, "").strip()
         scraped = cache.get(url, {field: "" for field in SCRAPED_FIELDS})
-        # Label empty scraped fields as MISSING
-        scraped = {k: v if v else "MISSING" for k, v in scraped.items()}
-        merged = dict(row)
+        # Label empty or dash-only scraped fields as MISSING
+        scraped = {k: ("MISSING" if (not v or v.strip() in DASH_VALUES) else v)
+                   for k, v in scraped.items()}
+        # Rename input columns to match spec
+        merged = {COLUMN_RENAMES.get(k, k): v for k, v in row.items()}
         merged.update(scraped)
         enriched_rows.append(merged)
 

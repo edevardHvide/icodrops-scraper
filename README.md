@@ -2,6 +2,19 @@
 
 A CLI tool that scrapes project pages from [icodrops.com](https://icodrops.com) and enriches your CSV dataset with additional fields like website URLs, smart contract addresses, fundraising data, and more.
 
+## Decisions
+
+Choices made during development that affect how data is collected:
+
+| # | Decision | Rationale |
+|---|----------|-----------|
+| 1 | **`investor_count` is sourced from the Overview section**, not from individual round cards under Past Activities. | The Overview section aggregates investors across all rounds. The per-round cards only list investors for that specific round, which undercounts. For example, Opinion Labs shows 2 investors in its round cards but 6 in Overview. |
+| 2 | **Dash values (`—`) are treated as `MISSING`**, not preserved as-is. | The site uses `—` to indicate missing data. Normalizing to `MISSING` makes filtering and analysis easier. |
+| 3 | **Input columns `source_url` and `categories` are renamed** to `icodrops_url` and `project_category` in the output. | Matches the variable names in the data specification. |
+| 4 | **`other_smart_contract_address_list`** uses semicolons as separator when a project has multiple non-ETH chain addresses. | Avoids comma conflicts within CSV fields. |
+
+---
+
 ## Quickstart with GitHub Codespaces (recommended)
 
 No local setup needed. Everything is pre-configured.
